@@ -7,8 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ SERVE IMAGES
+// =====================
+// SERVE STATIC FILES
+// =====================
+
+// Serve images
 app.use("/images", express.static(path.join(__dirname, "public/images")));
+// Serve index.html and any other public files
+app.use(express.static(path.join(__dirname, "public")));
 
 // =====================
 // MULTER SETUP (UPLOAD)
@@ -21,8 +27,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // =====================
 // PRODUCTS DATA
@@ -106,12 +111,12 @@ const products = [
 // ROUTES
 // =====================
 
-// 🔥 API ROUTE
+// API route for all products
 app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
-// 🔥 UPLOAD ROUTE (for future use)
+// Upload route (for future use)
 app.post("/upload", upload.single("image"), (req, res) => {
   res.json({
     message: "Image uploaded successfully",
@@ -119,41 +124,14 @@ app.post("/upload", upload.single("image"), (req, res) => {
   });
 });
 
-// 🔥 HOME PAGE (ASSIGNMENT REQUIREMENT)
+// Home route – serve index.html
 app.get("/", (req, res) => {
-  res.send(`
-    <html>
-      <head>
-        <title>Vintage Vixen API</title>
-        <style>
-          body {
-            font-family: Arial;
-            text-align: center;
-            background: #ffe4ec;
-            padding: 40px;
-          }
-          a {
-            display: block;
-            margin: 10px;
-            font-size: 18px;
-            color: #ff4da6;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>💋 Vintage Vixen API</h1>
-        <p>Available routes:</p>
-        <a href="/api/products">View All Products</a>
-      </body>
-    </html>
-  `);
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 // =====================
 // START SERVER
 // =====================
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running on port", PORT));
 
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
-});

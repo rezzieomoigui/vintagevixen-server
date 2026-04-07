@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vintage Vixen API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe4ec;
+      padding: 40px;
+      display: flex;
+      gap: 40px;
+    }
+    .api, .example {
+      flex: 1;
+    }
+    h1, h2 {
+      color: #ff4da6;
+    }
+    a {
+      display: block;
+      margin: 10px 0;
+      font-size: 18px;
+      color: #ff4da6;
+      text-decoration: none;
+    }
+    pre {
+      background: #fff0f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="api">
+    <h1>💋 Vintage Vixen API</h1>
+    <h2>Available Endpoints</h2>
+    <a href="/api/products">View All Products</a>
+  </div>
+  <div class="example">
+    <h2>Example Response</h2>
+    <pre id="example-response">Loading...</pre>
+  </div>
+
+  <script>
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('example-response').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('example-response').textContent = 'Error fetching data';
+      });
+  </script>
+</body>
+</html>
