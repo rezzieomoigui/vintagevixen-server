@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -27,6 +28,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
+
 const upload = multer({ storage });
 
 // =====================
@@ -108,12 +110,47 @@ const products = [
 ];
 
 // =====================
+// JOI VALIDATION
+// =====================
+const productSchema = Joi.object({
+  title: Joi.string().min(3).required(),
+  price: Joi.string().pattern(/^\$\d+/).required(),
+  image: Joi.string().required(),
+  description: Joi.string().min(5).required(),
+  category: Joi.string().required(),
+});
+
+// =====================
 // ROUTES
 // =====================
 
-// API route for all products
+// GET all products
 app.get("/api/products", (req, res) => {
   res.json(products);
+});
+
+// POST new product ⭐ REQUIRED FOR ASSIGNMENT
+app.post("/api/products", (req, res) => {
+  const { error } = productSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  const newProduct = {
+    id: products.length + 1,
+    ...req.body,
+  };
+
+  products.push(newProduct);
+
+  res.json({
+    success: true,
+    product: newProduct,
+  });
 });
 
 // Upload route (for future use)
