@@ -129,7 +129,7 @@ app.get("/api/products", (req, res) => {
   res.json(products);
 });
 
-// POST new product ⭐ REQUIRED FOR ASSIGNMENT
+// POST new product
 app.post("/api/products", (req, res) => {
   const { error } = productSchema.validate(req.body);
 
@@ -153,7 +153,56 @@ app.post("/api/products", (req, res) => {
   });
 });
 
+// =====================
+// PUT (EDIT PRODUCT)
+// =====================
+app.put("/api/products/:id", (req, res) => {
+  const { error } = productSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  const product = products.find(
+    (p) => p.id === parseInt(req.params.id)
+  );
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  product.title = req.body.title;
+  product.price = req.body.price;
+  product.image = req.body.image;
+  product.description = req.body.description;
+  product.category = req.body.category;
+
+  res.status(200).json(product);
+});
+
+// =====================
+// DELETE (REMOVE PRODUCT)
+// =====================
+app.delete("/api/products/:id", (req, res) => {
+  const index = products.findIndex(
+    (p) => p.id === parseInt(req.params.id)
+  );
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  const deletedProduct = products.splice(index, 1);
+
+  res.status(200).json(deletedProduct[0]);
+});
+
+// =====================
 // Upload route (for future use)
+// =====================
 app.post("/upload", upload.single("image"), (req, res) => {
   res.json({
     message: "Image uploaded successfully",
