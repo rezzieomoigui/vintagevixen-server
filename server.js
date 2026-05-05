@@ -67,8 +67,13 @@ const productSchema = Joi.object({
 
 // GET all products
 app.get("/api/products", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching products" });
+  }
 });
 
 // POST new product
